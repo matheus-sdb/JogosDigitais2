@@ -1,0 +1,2 @@
+rootProject.name = 'TrioTiles'
+include 'core', 'lwjgl3'
