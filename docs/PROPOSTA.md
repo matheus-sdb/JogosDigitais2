@@ -1,7 +1,8 @@
 # TrioTiles: proposta do projeto
 
 > Jogo sério de reabilitação da mão e dos dedos, no estilo *Piano Tiles*, controlado por um teclado USB de 3 teclas + 1 knob, desenvolvido em libGDX.
-> Nome provisório. O personagem principal se chama **Pipo**.
+> O personagem principal se chama **Pipo**.
+> **Status:** dispositivo aprovado pelo professor. Aparelho chega na quarta/quinta.
 
 ---
 
@@ -44,7 +45,7 @@ Com isso o jogo inteiro (menu, pausa, reinício e gameplay) funciona **só com o
 
 ### É "IoT"?
 
-O enunciado aceita "outros dispositivos de IoT, **a definir com o professor, mediante autorização prévia**". Esse aparelho é um dispositivo de entrada USB, não um sensor conectado à internet, então **precisamos da aprovação do professor**. Argumentos para levar:
+✅ **Aprovado pelo professor.** O enunciado aceita "outros dispositivos de IoT, a definir com o professor, mediante autorização prévia". Argumentos usados (bons para o short paper):
 
 - Ele é o **sensor** do exercício: mede *qual* dedo, *quando* apertou, *quanto tempo* segurou e *quanto* girou.
 - O controle é feito **exclusivamente** por ele.
@@ -168,7 +169,7 @@ Esses dados são gravados num arquivo local (JSON) com data e hora. A tela **Pro
 | Requisito | Como atendemos |
 |---|---|
 | Desenvolvido em libGDX | Projeto Java com libGDX, gerado pelo gdx-liftoff |
-| Integração com dispositivo IoT | Teclado de 3 teclas + knob como sensor do exercício (**pedir aprovação ao professor**), com envio opcional dos dados para a nuvem |
+| Integração com dispositivo IoT | Teclado de 3 teclas + knob como sensor do exercício (aprovado pelo professor), com envio opcional dos dados para a nuvem |
 | Controle exclusivo pelo dispositivo | Gameplay e menus funcionam só com as 3 teclas + knob |
 | Ações do jogo influenciadas pelo uso do dispositivo | Cada nota depende de qual dedo aperta, quando e por quanto tempo |
 | Mínimo 3 fases com dificuldade progressiva | Aquecimento → Ritmo → Destreza |
@@ -186,7 +187,7 @@ Esses dados são gravados num arquivo local (JSON) com data e hora. A tela **Pro
 
 - **Linguagem:** Java 17
 - **Plataforma:** Desktop (LWJGL3). O aparelho é USB, então desktop é o mais simples. Android (APK) fica como extra, via cabo OTG.
-- **Gerador do projeto:** [gdx-liftoff](https://github.com/libgdx/gdx-liftoff)
+- **Projeto:** Gradle, no mesmo formato do [gdx-liftoff](https://github.com/libgdx/gdx-liftoff), libGDX 1.14.2
 - **Bibliotecas:** libGDX core + Scene2D (menus) + FreeType (fontes). Sem dependências exóticas.
 
 Organização sugerida:
@@ -223,14 +224,15 @@ A camada `DeviceInput` é importante: o resto do jogo nunca sabe que tecla foi a
 Cada sprint ≈ 1 semana, para casar com os commits semanais e a reunião com o professor. Cada membro do grupo deve fazer commit toda semana; distribuam os itens no Kanban (colunas: **A fazer · Fazendo · Revisão · Feito**).
 
 ### Sprint 0: Preparação
-- [ ] Mostrar a proposta ao professor e **pedir aprovação do dispositivo**
-- [ ] Comprar/receber o aparelho e fazer os 4 testes da seção 2
+- [x] Mostrar a proposta ao professor e **pedir aprovação do dispositivo**
+- [x] Tela "Teste do Aparelho" no jogo e guia [TESTE_APARELHO.md](TESTE_APARELHO.md)
+- [ ] Receber o aparelho e fazer os 4 testes da seção 2 (chega qua/qui)
 - [ ] Configurar as teclas no software do aparelho
-- [ ] Gerar o projeto libGDX (gdx-liftoff) e subir no GitHub
+- [x] Gerar o projeto libGDX e subir no GitHub (com CI que gera o `.jar` a cada push)
 - [ ] Criar o quadro Kanban (GitHub Projects) com este roadmap
 
 ### Sprint 1: Núcleo do jogo
-- [ ] `DeviceInput`: ler as 6 ações do aparelho
+- [x] `DeviceInput`: ler as 6 ações do aparelho (adiantado na Sprint 0)
 - [ ] Desenhar 3 trilhas e a linha de acerto
 - [ ] Notas simples caindo em velocidade fixa
 - [ ] Apertar a tecla certa faz a nota sumir (acerto) ou contar erro
@@ -275,7 +277,6 @@ Cada sprint ≈ 1 semana, para casar com os commits semanais e a reunião com o 
 
 | Risco / dúvida | Plano |
 |---|---|
-| Professor não aceitar o aparelho como "IoT" | Levar os argumentos da seção 2; oferecer o envio de dados para a nuvem |
 | Aparelho não segura a tecla (envia apertar+soltar na hora) | Trocar notas longas por "toques rápidos repetidos" (resistência por repetição) |
 | Knob envia só teclas de mídia | Reprogramar no software; se impossível, usar só para o menu com outra combinação |
 | Software do aparelho só roda no Windows | Configurar uma vez num PC Windows (fica salvo no aparelho) |
