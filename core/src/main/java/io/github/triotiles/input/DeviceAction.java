@@ -21,4 +21,14 @@ public enum DeviceAction {
     public int laneIndex() {
         return lane ? ordinal() : -1;
     }
+
+    /** A ação da trilha 0, 1 ou 2. */
+    public static DeviceAction forLane(int laneIndex) {
+        return switch (laneIndex) {
+            case 0 -> LANE_1;
+            case 1 -> LANE_2;
+            case 2 -> LANE_3;
+            default -> throw new IllegalArgumentException("trilha inválida: " + laneIndex);
+        };
+    }
 }

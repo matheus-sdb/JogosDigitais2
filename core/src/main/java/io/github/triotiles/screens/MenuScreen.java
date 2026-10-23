@@ -8,11 +8,11 @@ import io.github.triotiles.input.DeviceAction;
 
 /** Menu principal provisório (o menu completo é da Sprint 3). Navegação só pelo knob. */
 public class MenuScreen extends BaseScreen {
-    private static final String[] ITEMS = {"Jogar (em breve)", "Teste do Aparelho", "Sair"};
-    private static final boolean[] ENABLED = {false, true, true};
+    private static final String[] ITEMS = {"Jogar", "Teste do Aparelho", "Sair"};
+    private static final boolean[] ENABLED = {true, true, true};
     private static final Color HIGHLIGHT = new Color(0.25f, 0.55f, 0.95f, 1f);
 
-    private int selected = 1;
+    private int selected = 0;
 
     public MenuScreen(TrioTilesGame game) {
         super(game);
@@ -31,6 +31,7 @@ public class MenuScreen extends BaseScreen {
     private void choose() {
         if (!ENABLED[selected]) return;
         switch (selected) {
+            case 0 -> game.setScreen(new GameScreen(game));
             case 1 -> game.setScreen(new DeviceTestScreen(game));
             case 2 -> Gdx.app.exit();
             default -> { }

@@ -14,6 +14,12 @@ import io.github.triotiles.input.DeviceListener;
 /** Base das telas: viewport 1280x720, fundo e recebimento das ações do aparelho. */
 public abstract class BaseScreen extends ScreenAdapter implements DeviceListener {
     protected static final Color BACKGROUND = new Color(0.07f, 0.08f, 0.12f, 1f);
+    /** Cor de cada trilha (tecla 1, 2, 3), igual em todas as telas. */
+    protected static final Color[] LANE_COLORS = {
+        new Color(0.30f, 0.60f, 1.00f, 1f),
+        new Color(0.35f, 0.85f, 0.45f, 1f),
+        new Color(1.00f, 0.60f, 0.25f, 1f),
+    };
 
     protected final TrioTilesGame game;
     protected final Viewport viewport;

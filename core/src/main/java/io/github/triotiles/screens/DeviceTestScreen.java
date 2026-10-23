@@ -21,11 +21,6 @@ public class DeviceTestScreen extends BaseScreen implements RawKeyListener {
     private static final int PRESSES_TO_JUDGE = 6;
     private static final long TRIPLE_CLICK_NS = 1_000_000_000L;
 
-    private static final Color[] LANE_COLORS = {
-        new Color(0.30f, 0.60f, 1.00f, 1f),
-        new Color(0.35f, 0.85f, 0.45f, 1f),
-        new Color(1.00f, 0.60f, 0.25f, 1f),
-    };
     private static final Color KNOB_COLOR = new Color(0.80f, 0.50f, 0.95f, 1f);
     private static final Color OK = new Color(0.35f, 0.85f, 0.45f, 1f);
     private static final Color PROBLEM = new Color(1f, 0.35f, 0.35f, 1f);
