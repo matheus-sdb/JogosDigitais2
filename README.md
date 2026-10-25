@@ -5,7 +5,9 @@ Jogo sério de reabilitação da mão e dos dedos, no estilo *Piano Tiles*, feit
 - Proposta, encaixe na reabilitação e roadmap: [docs/PROPOSTA.md](docs/PROPOSTA.md)
 - Guia para testar o aparelho: [docs/TESTE_APARELHO.md](docs/TESTE_APARELHO.md)
 
-**Status:** Sprint 0 concluída (projeto pronto, tela de teste do aparelho). Próximo: Sprint 1, o núcleo do jogo.
+**Status:** Sprint 0 quase concluída: projeto pronto e aparelho configurado e testado (4/4 OK). Falta só o quadro Kanban. Próximo: Sprint 1, o núcleo do jogo.
+
+> **Windows:** clone o projeto numa pasta **sem acento** no caminho (ex.: `C:\dev\TrioTiles`). Com acento (ex.: `Temporário`), o Gradle não encontra as classes e `gradlew test` falha.
 
 ![Menu](docs/img/menu.png)
 
@@ -45,15 +47,16 @@ O jogo é controlado só pelo aparelho. Enquanto ele não está disponível, o t
 | Aparelho | Ação | Teclado do PC |
 |---|---|---|
 | Tecla 1 / 2 / 3 | Trilhas esquerda / meio / direita | `A` / `S` / `D` (ou `F13`/`F14`/`F15`) |
-| Knob girar ← / → | Navegar nos menus | `↑` / `↓` |
-| Knob clique | Confirmar / pausar | `Enter` |
+| Knob girar ← / → | Navegar nos menus · na pausa, voltar ao menu | `↑` / `↓` |
+| Knob clique | Confirmar · pausar e continuar o jogo | `Enter` |
 
 ## Estrutura
 
 ```
 core/     lógica do jogo (independente de plataforma)
   input/    leitura do aparelho: DeviceInput, DeviceMapping, DeviceAction
-  screens/  telas: MenuScreen, DeviceTestScreen
+  game/     regras, sem desenho: Note, Chart (sequência de notas), Playfield (acerto/erro)
+  screens/  telas: MenuScreen, GameScreen, DeviceTestScreen
 lwjgl3/   versão desktop (Lwjgl3Launcher)
 assets/   imagens, sons e fontes
 docs/     proposta, guias e prints
