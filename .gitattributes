@@ -1,0 +1,18 @@
+# Garante os finais de linha certos, em qualquer computador e qualquer cliente git.
+* text=auto
+
+# Scripts do Linux/macOS precisam de LF; os do Windows, de CRLF.
+gradlew text eol=lf
+*.sh    text eol=lf
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+# Arquivos binários: nunca mexer.
+*.jar  binary
+*.png  binary
+*.jpg  binary
+*.ogg  binary
+*.mp3  binary
+*.wav  binary
+*.ttf  binary
+*.otf  binary
