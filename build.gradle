@@ -1,3 +1,18 @@
+// Windows + pasta com acento (ex.: "Temporário", "Ação"): o Gradle passa os caminhos das classes
+// para o Java num arquivo em UTF-8, mas o Java no Windows lê esse arquivo em Cp1252. O caminho chega
+// estragado e os testes/execução falham com ClassNotFoundException. Nesse caso, as pastas build/
+// vão para uma pasta sem acento dentro de ~/.gradle. Fora disso, nada muda.
+def projectPath = rootDir.absolutePath
+def isWindows = System.getProperty('os.name').toLowerCase().contains('windows')
+if (isWindows && projectPath.chars().anyMatch { it > 127 }) {
+  def outside = new File(gradle.gradleUserHomeDir,
+      "triotiles-build/${Integer.toHexString(projectPath.toLowerCase().hashCode())}")
+  allprojects { p ->
+    p.layout.buildDirectory.set(new File(outside, p == rootProject ? '_root' : p.name))
+  }
+  logger.lifecycle("Pasta com acento detectada: arquivos de build em ${outside}")
+}
+
 allprojects {
   apply plugin: 'idea'
   apply plugin: 'eclipse'

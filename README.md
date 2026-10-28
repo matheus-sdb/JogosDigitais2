@@ -4,10 +4,11 @@ Jogo sério de reabilitação da mão e dos dedos, no estilo *Piano Tiles*, feit
 
 - Proposta, encaixe na reabilitação e roadmap: [docs/PROPOSTA.md](docs/PROPOSTA.md)
 - Guia para testar o aparelho: [docs/TESTE_APARELHO.md](docs/TESTE_APARELHO.md)
+- Levar o projeto (.zip) para outro repositório, como o da entrega: [docs/ENTREGA.md](docs/ENTREGA.md)
 
-**Status:** Sprint 0 quase concluída: projeto pronto e aparelho configurado e testado (4/4 OK). Falta só o quadro Kanban. Próximo: Sprint 1, o núcleo do jogo.
+**Status:** Sprints 0, 1 e 2 concluídas (aparelho testado, fase jogável, pontuação e métricas de velocidade e consistência). Próximo: Sprint 3, menus e personagem.
 
-> **Windows:** clone o projeto numa pasta **sem acento** no caminho (ex.: `C:\dev\TrioTiles`). Com acento (ex.: `Temporário`), o Gradle não encontra as classes e `gradlew test` falha.
+Funciona baixando o `.zip` do GitHub, em qualquer pasta (inclusive com acento, como `Temporário`) e em qualquer repositório, mesmo enviando os arquivos pelo site.
 
 ![Menu](docs/img/menu.png)
 
@@ -19,8 +20,8 @@ Precisa do **JDK 17 ou mais novo** (ex.: [Temurin](https://adoptium.net/)). O Gr
 # Windows
 gradlew.bat lwjgl3:run
 
-# Linux / macOS
-./gradlew lwjgl3:run
+# Linux / macOS (o "sh" evita erro de permissão em projetos vindos de .zip)
+sh gradlew lwjgl3:run
 ```
 
 No IntelliJ IDEA: *File → Open* na pasta do projeto e rode a tarefa Gradle `lwjgl3 > application > run`.
@@ -28,7 +29,7 @@ No IntelliJ IDEA: *File → Open* na pasta do projeto e rode a tarefa Gradle `lw
 ### Gerar o executável (.jar)
 
 ```bash
-./gradlew lwjgl3:jar
+gradlew.bat lwjgl3:jar        # Linux / macOS: sh gradlew lwjgl3:jar
 java -jar lwjgl3/build/libs/TrioTiles-0.1.0.jar
 ```
 
@@ -37,7 +38,7 @@ Cada push no GitHub também gera o `.jar` automaticamente: aba **Actions** → e
 ### Rodar os testes
 
 ```bash
-./gradlew test
+gradlew.bat test              # Linux / macOS: sh gradlew test
 ```
 
 ## Controles
@@ -55,8 +56,9 @@ O jogo é controlado só pelo aparelho. Enquanto ele não está disponível, o t
 ```
 core/     lógica do jogo (independente de plataforma)
   input/    leitura do aparelho: DeviceInput, DeviceMapping, DeviceAction
-  game/     regras, sem desenho: Note, Chart (sequência de notas), Playfield (acerto/erro)
-  screens/  telas: MenuScreen, GameScreen, DeviceTestScreen
+  game/     regras, sem desenho: Note, Chart (sequência de notas), Playfield (acerto/erro),
+            Judge (Perfeito/Bom/Ok), Score (pontos e combo), SessionStats (métricas da sessão)
+  screens/  telas: MenuScreen, GameScreen, ResultScreen, DeviceTestScreen
 lwjgl3/   versão desktop (Lwjgl3Launcher)
 assets/   imagens, sons e fontes
 docs/     proposta, guias e prints
