@@ -2,7 +2,7 @@
 
 > Jogo sério de reabilitação da mão e dos dedos, no estilo *Piano Tiles*, controlado por um teclado USB de 3 teclas + 1 knob, desenvolvido em libGDX.
 > O personagem principal se chama **Pipo**.
-> **Status:** dispositivo aprovado pelo professor. Aparelho chega na quarta/quinta.
+> **Status:** dispositivo aprovado pelo professor, recebido, configurado e testado em 22/10/2026: os 4 testes passaram ([resultado](TESTE_APARELHO.md#4-registrar-o-resultado)).
 
 ---
 
@@ -226,23 +226,31 @@ Cada sprint ≈ 1 semana, para casar com os commits semanais e a reunião com o 
 ### Sprint 0: Preparação
 - [x] Mostrar a proposta ao professor e **pedir aprovação do dispositivo**
 - [x] Tela "Teste do Aparelho" no jogo e guia [TESTE_APARELHO.md](TESTE_APARELHO.md)
-- [ ] Receber o aparelho e fazer os 4 testes da seção 2 (chega qua/qui)
-- [ ] Configurar as teclas no software do aparelho
+- [x] Receber o aparelho e fazer os 4 testes da seção 2: todos OK (segura a tecla, 3 teclas juntas, knob normal)
+- [x] Configurar as teclas no software do aparelho (A/S/D, knob ↑/Enter/↓)
 - [x] Gerar o projeto libGDX e subir no GitHub (com CI que gera o `.jar` a cada push)
-- [ ] Criar o quadro Kanban (GitHub Projects) com este roadmap
+- [x] Criar o quadro Kanban (GitHub Projects) com este roadmap, no repositório da entrega
 
 ### Sprint 1: Núcleo do jogo
 - [x] `DeviceInput`: ler as 6 ações do aparelho (adiantado na Sprint 0)
-- [ ] Desenhar 3 trilhas e a linha de acerto
-- [ ] Notas simples caindo em velocidade fixa
-- [ ] Apertar a tecla certa faz a nota sumir (acerto) ou contar erro
-- **Entrega:** dá para "jogar" uma fase crua com o aparelho
+- [x] Desenhar 3 trilhas e a linha de acerto (`GameScreen`)
+- [x] Notas simples caindo em velocidade fixa (`Chart`: 40 notas, ~70 por minuto, sem 3 seguidas na mesma trilha)
+- [x] Apertar a tecla certa faz a nota sumir (acerto) ou contar erro (`Playfield`: janela de ±250 ms; conta perdidas e "tecla errada")
+- [x] Extra: pausa pelo clique do knob e tela de fim com acertos, perdidas e teclas erradas
+- **Entrega:** ✅ fase crua jogável com o aparelho (testada em 22/10/2026: 29 de 40 acertos na primeira partida)
+
+![Fim da fase na Sprint 1](img/jogo-sprint1.png)
 
 ### Sprint 2: Pontuação e métricas
-- [ ] `Judge`: Δt e Perfeito/Bom/Ok/Errou
-- [ ] Pontos, combo, HUD
-- [ ] `SessionStats`: precisão, Δt médio, desvio padrão, por dedo
-- [ ] Tela de resultado ao fim da fase
+- [x] `Judge`: Δt e Perfeito/Bom/Ok/Errou (80 / 160 / 250 ms; janelas configuráveis para a Sprint 5)
+- [x] Pontos, combo, HUD (`Score`: multiplicador sobe a cada 10 acertos seguidos, até 4x; nota perdida ou tecla errada zera o combo)
+- [x] `SessionStats`: precisão, velocidade (média de \|Δt\|), consistência (desvio padrão de Δt), tendência (adianta/atrasa), precisão e teclas erradas por dedo
+- [x] Tela de resultado ao fim da fase (`ResultScreen`): métricas, barras por dedo, aviso do "dedo para treinar mais" e opções Jogar de novo / Menu pelo knob
+- **Entrega:** ✅ testada em 28/10/2026
+
+![Resultado da fase na Sprint 2](img/resultado-sprint2.png)
+
+> **Observação para os testes:** na primeira partida a tendência foi "atrasa 97 ms". Parte disso pode ser atraso do monitor e do sistema, não do paciente. Se continuar aparecendo com outras pessoas, vale incluir nas Configurações (Sprint 5) um ajuste de atraso (calibração).
 
 ### Sprint 3: Menus e personagem
 - [ ] Menu principal, pausa (iniciar / pausar / reiniciar) navegando pelo knob
@@ -251,8 +259,8 @@ Cada sprint ≈ 1 semana, para casar com os commits semanais e a reunião com o 
 
 ### Sprint 4: As 3 fases
 - [ ] `LevelData` com as 3 fases e dificuldade progressiva
-- [ ] Notas longas (HOLD) — se o teste do aparelho permitir
-- [ ] Acordes e notas de giro do knob (Fase 3)
+- [ ] Notas longas (HOLD); o aparelho segura a tecla, teste aprovado
+- [ ] Acordes (até 3 teclas juntas, teste aprovado) e notas de giro do knob (Fase 3)
 - [ ] Fundos de cada fase (quarto, praça, teatro) e desbloqueio por meta
 
 ### Sprint 5: Evolução do paciente

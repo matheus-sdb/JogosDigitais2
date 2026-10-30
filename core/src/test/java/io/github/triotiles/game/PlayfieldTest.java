@@ -10,7 +10,7 @@ class PlayfieldTest {
     private static final double WINDOW = 0.25;
 
     private static Playfield field(Note... notes) {
-        return new Playfield(new Chart(List.of(notes)), WINDOW);
+        return new Playfield(new Chart(List.of(notes)), Judge.standard()); // janela de acerto = 0.25
     }
 
     @Test
@@ -83,6 +83,42 @@ class PlayfieldTest {
 
         assertSame(first, f.press(0, 2.1));
         assertSame(second, f.press(0, 2.15));
+    }
+
+    @Test
+    void hitsAreJudgedAndMissesAreMarkedErrou() {
+        Note perfect = new Note(0, 2.0);
+        Note ok = new Note(1, 3.0);
+        Note missed = new Note(2, 4.0);
+        Playfield f = field(perfect, ok, missed);
+
+        f.press(0, 2.05);
+        f.press(1, 2.8);
+        f.update(5.0);
+
+        assertEquals(Judgement.PERFECT, perfect.judgement());
+        assertEquals(Judgement.OK, ok.judgement());
+        assertEquals(Judgement.MISS, missed.judgement());
+    }
+
+    @Test
+    void scoreGrowsWithHitsAndComboBreaksOnMissOrStray() {
+        Playfield f = field(new Note(0, 1.0), new Note(1, 2.0), new Note(2, 3.0), new Note(0, 4.0));
+
+        f.press(0, 1.0); // Perfeito: 100
+        f.press(1, 2.1); // Bom: 70
+        assertEquals(170, f.score().points());
+        assertEquals(2, f.score().combo());
+
+        f.press(1, 2.6); // tecla errada
+        assertEquals(0, f.score().combo());
+        assertEquals(1, f.strays(1));
+
+        f.press(2, 3.0);
+        f.update(5.0);   // a última nota passou
+        assertEquals(0, f.score().combo());
+        assertEquals(2, f.score().maxCombo());
+        assertEquals(270, f.score().points());
     }
 
     @Test

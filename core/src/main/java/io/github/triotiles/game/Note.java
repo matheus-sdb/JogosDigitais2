@@ -11,6 +11,7 @@ public class Note {
 
     State state = State.PENDING;
     double offset;
+    Judgement judgement;
 
     public Note(int lane, double time) {
         if (lane < 0 || lane >= Playfield.LANES) throw new IllegalArgumentException("trilha inválida: " + lane);
@@ -29,5 +30,10 @@ public class Note {
     /** Toque − momento ideal, em segundos (positivo = atrasado). Só vale para notas acertadas. */
     public double offset() {
         return offset;
+    }
+
+    /** Perfeito/Bom/Ok se acertada, Errou se perdida, null se ainda não resolvida. */
+    public Judgement judgement() {
+        return judgement;
     }
 }
