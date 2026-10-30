@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Arquivos enviados pelo site do GitHub ("Add files via upload") ou extraídos de um .zip
+      # perdem a permissão de execução, e editores do Windows podem trocar o fim de linha.
+      # Isso deixa o gradlew funcionando em qualquer repositório, de qualquer jeito que ele foi enviado.
+      - name: Preparar o gradlew
+        run: |
+          sed -i 's/\r$//' gradlew
+          chmod +x gradlew
+
+      - name: Compilar e rodar os testes
+        run: ./gradlew build
+
+      - name: Publicar o .jar do jogo
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrioTiles-jar
+          path: lwjgl3/build/libs/*.jar
