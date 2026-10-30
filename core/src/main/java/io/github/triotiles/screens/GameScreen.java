@@ -5,12 +5,16 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.TimeUtils;
 import io.github.triotiles.TrioTilesGame;
 import io.github.triotiles.game.Chart;
+import io.github.triotiles.game.Judge;
 import io.github.triotiles.game.Note;
 import io.github.triotiles.game.Playfield;
+import io.github.triotiles.game.Score;
+import io.github.triotiles.game.SessionStats;
 import io.github.triotiles.input.DeviceAction;
 
 /**
- * Fase crua da Sprint 1: notas simples caem nas 3 trilhas e a tecla certa na hora certa acerta a nota.
+ * A fase: notas simples caem nas 3 trilhas; a tecla certa na hora certa acerta a nota
+ * (Perfeito / Bom / Ok) e soma pontos com combo. Ao terminar, abre a {@link ResultScreen}.
  * Knob clique pausa; na pausa, girar o knob volta ao menu.
  */
 public class GameScreen extends BaseScreen {
@@ -18,7 +22,6 @@ public class GameScreen extends BaseScreen {
     private static final int NOTE_COUNT = 40;
     private static final double FIRST_NOTE = 3.0;   // s até a primeira nota: tempo para se preparar
     private static final double INTERVAL = 0.85;    // s entre notas (~70 por minuto)
-    private static final double HIT_WINDOW = 0.25;  // s antes ou depois do momento ideal
     private static final double END_DELAY = 1.0;    // s depois da última nota até mostrar o resultado
 
     // ---- desenho ----
@@ -35,9 +38,6 @@ public class GameScreen extends BaseScreen {
 
     private static final Color LANE_BG = new Color(0.11f, 0.12f, 0.17f, 1f);
     private static final Color MISSED_NOTE = new Color(0.30f, 0.30f, 0.35f, 1f);
-    private static final Color GOOD = new Color(0.35f, 0.85f, 0.45f, 1f);
-    private static final Color BAD = new Color(1f, 0.35f, 0.35f, 1f);
-    private static final Color PANEL = new Color(0.13f, 0.14f, 0.20f, 1f);
 
     private final Playfield field;
     private long startNanos;
@@ -53,7 +53,7 @@ public class GameScreen extends BaseScreen {
     public GameScreen(TrioTilesGame game) {
         super(game);
         Chart chart = Chart.randomTaps(TimeUtils.millis(), NOTE_COUNT, FIRST_NOTE, INTERVAL);
-        field = new Playfield(chart, HIT_WINDOW);
+        field = new Playfield(chart, Judge.standard());
     }
 
     @Override
@@ -94,32 +94,28 @@ public class GameScreen extends BaseScreen {
 
     @Override
     public void actionDown(DeviceAction action, long timeNanos) {
+        if (finished) return; // indo para o resultado
         if (action == DeviceAction.KNOB_PRESS) {
-            if (finished) backToMenu();
-            else setPaused(!isPaused());
+            setPaused(!isPaused());
             return;
         }
-        if (!action.lane) { // girar o knob: só serve na pausa e no fim
-            if (isPaused() || finished) backToMenu();
+        if (!action.lane) { // girar o knob: só serve na pausa
+            if (isPaused()) game.setScreen(new MenuScreen(game));
             return;
         }
-        if (isPaused() || finished) return;
+        if (isPaused()) return;
 
         int lane = action.laneIndex();
         long when = timeNanos > 0 ? timeNanos : TimeUtils.nanoTime();
         Note hit = field.press(lane, phaseTime(when));
-        if (hit != null) showFeedback(lane, "Acertou!", GOOD);
-        else showFeedback(lane, "Errou", BAD);
+        if (hit != null) showFeedback(lane, hit.judgement().label, colorOf(hit.judgement()));
+        else showFeedback(lane, "Errou", BAD_COLOR);
     }
 
     private void showFeedback(int lane, String text, Color color) {
         feedbackText[lane] = text;
         feedbackColor[lane] = color;
         feedbackTimer[lane] = FEEDBACK_TIME;
-    }
-
-    private void backToMenu() {
-        game.setScreen(new MenuScreen(game));
     }
 
     // ---------- lógica por frame ----------
@@ -130,8 +126,11 @@ public class GameScreen extends BaseScreen {
         if (isPaused() || finished) return;
 
         double t = phaseTime(TimeUtils.nanoTime());
-        field.update(t, n -> showFeedback(n.lane, "Perdeu", BAD));
-        if (field.isFinished() && t > field.chart().endTime() + END_DELAY) finished = true;
+        field.update(t, n -> showFeedback(n.lane, "Perdeu", BAD_COLOR));
+        if (field.isFinished() && t > field.chart().endTime() + END_DELAY) {
+            finished = true;
+            game.setScreen(new ResultScreen(game, SessionStats.from(field)));
+        }
     }
 
     // ---------- desenho ----------
@@ -169,8 +168,8 @@ public class GameScreen extends BaseScreen {
         s.setColor(Color.WHITE);
         s.rect(LANES_X - 12, HIT_Y - 2, LANES_W + 24, 4);
 
-        if (isPaused() || finished) {
-            s.setColor(PANEL);
+        if (isPaused()) {
+            s.setColor(PANEL_COLOR);
             s.rect(TrioTilesGame.WORLD_WIDTH / 2f - 330, 220, 660, 300);
         }
         s.end();
@@ -178,27 +177,32 @@ public class GameScreen extends BaseScreen {
         game.batch.begin();
         drawHud(t);
         drawFeedback();
-        if (finished) drawResult();
-        else if (isPaused()) drawPause();
+        if (isPaused()) drawPause();
         game.batch.end();
     }
 
     private void drawHud(double t) {
+        Score score = field.score();
         float x = 40;
         game.font.setColor(Color.WHITE);
         game.font.draw(game.batch, "Fase 1 (provisória)", x, 690);
-        game.font.setColor(GOOD);
-        game.font.draw(game.batch, "Acertos: " + field.hits(), x, 620);
-        game.font.setColor(BAD);
-        game.font.draw(game.batch, "Perdidas: " + field.misses(), x, 580);
-        game.font.draw(game.batch, "Tecla errada: " + field.strays(), x, 540);
+        game.font.draw(game.batch, "Pontos: " + score.points(), x, 630);
+        if (score.combo() > 1) {
+            game.font.setColor(score.multiplier() > 1 ? PERFECT_COLOR : Color.LIGHT_GRAY);
+            game.font.draw(game.batch, "Combo " + score.combo() + "  (" + score.multiplier() + "x)", x, 590);
+        }
+        game.font.setColor(GOOD_COLOR);
+        game.font.draw(game.batch, "Acertos: " + field.hits(), x, 520);
+        game.font.setColor(BAD_COLOR);
+        game.font.draw(game.batch, "Perdidas: " + field.misses(), x, 480);
+        game.font.draw(game.batch, "Tecla errada: " + field.strays(), x, 440);
         game.font.setColor(Color.LIGHT_GRAY);
         int done = field.hits() + field.misses();
-        game.font.draw(game.batch, "Notas: " + done + " / " + field.chart().size(), x, 480);
+        game.font.draw(game.batch, "Notas: " + done + " / " + field.chart().size(), x, 380);
 
         float rx = LANES_X + LANES_W + 40;
-        game.font.draw(game.batch, "Clique o knob:", rx, 620);
-        game.font.draw(game.batch, "pausar", rx, 585);
+        game.font.draw(game.batch, "Clique o knob:", rx, 630);
+        game.font.draw(game.batch, "pausar", rx, 595);
 
         for (int lane = 0; lane < Playfield.LANES; lane++) {
             drawCentered(game.font, String.valueOf(lane + 1), laneX(lane) + LANE_W / 2f, PAD_Y + PAD_H / 2f + 12, Color.WHITE);
@@ -223,15 +227,5 @@ public class GameScreen extends BaseScreen {
         drawCentered(game.fontBig, "Pausado", cx, 470, Color.WHITE);
         drawCentered(game.font, "Clique o knob: continuar", cx, 350, Color.WHITE);
         drawCentered(game.font, "Gire o knob: voltar ao menu", cx, 300, Color.LIGHT_GRAY);
-    }
-
-    private void drawResult() {
-        float cx = TrioTilesGame.WORLD_WIDTH / 2f;
-        int percent = (int) Math.round(field.accuracy() * 100);
-        drawCentered(game.fontBig, "Fim da fase!", cx, 480, Color.WHITE);
-        drawCentered(game.font, "Acertos: " + field.hits() + " de " + field.chart().size() + "  (" + percent + "%)",
-                cx, 380, GOOD);
-        drawCentered(game.font, "Perdidas: " + field.misses() + "   Tecla errada: " + field.strays(), cx, 335, BAD);
-        drawCentered(game.font, "Clique o knob para voltar ao menu", cx, 260, Color.LIGHT_GRAY);
     }
 }

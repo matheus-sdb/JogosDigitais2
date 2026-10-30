@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.github.triotiles.TrioTilesGame;
+import io.github.triotiles.game.Judgement;
 import io.github.triotiles.input.DeviceAction;
 import io.github.triotiles.input.DeviceListener;
 
@@ -20,6 +21,22 @@ public abstract class BaseScreen extends ScreenAdapter implements DeviceListener
         new Color(0.35f, 0.85f, 0.45f, 1f),
         new Color(1.00f, 0.60f, 0.25f, 1f),
     };
+    protected static final Color GOOD_COLOR = new Color(0.35f, 0.85f, 0.45f, 1f);
+    protected static final Color BAD_COLOR = new Color(1f, 0.35f, 0.35f, 1f);
+    protected static final Color PERFECT_COLOR = new Color(1f, 0.85f, 0.30f, 1f);
+    protected static final Color OK_COLOR = new Color(0.55f, 0.75f, 1f, 1f);
+    protected static final Color PANEL_COLOR = new Color(0.13f, 0.14f, 0.20f, 1f);
+    protected static final Color HIGHLIGHT_COLOR = new Color(0.25f, 0.55f, 0.95f, 1f);
+
+    /** Cor de cada avaliação, igual no jogo e no resultado. */
+    protected static Color colorOf(Judgement judgement) {
+        return switch (judgement) {
+            case PERFECT -> PERFECT_COLOR;
+            case GOOD -> GOOD_COLOR;
+            case OK -> OK_COLOR;
+            case MISS -> BAD_COLOR;
+        };
+    }
 
     protected final TrioTilesGame game;
     protected final Viewport viewport;
