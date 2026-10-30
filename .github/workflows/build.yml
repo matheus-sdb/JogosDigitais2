@@ -17,6 +17,14 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
+      # Arquivos enviados pelo site do GitHub ("Add files via upload") ou extraídos de um .zip
+      # perdem a permissão de execução, e editores do Windows podem trocar o fim de linha.
+      # Isso deixa o gradlew funcionando em qualquer repositório, de qualquer jeito que ele foi enviado.
+      - name: Preparar o gradlew
+        run: |
+          sed -i 's/\r$//' gradlew
+          chmod +x gradlew
+
       - name: Compilar e rodar os testes
         run: ./gradlew build
 
