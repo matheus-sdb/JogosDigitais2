@@ -6,7 +6,7 @@ Jogo sério de reabilitação da mão e dos dedos, no estilo *Piano Tiles*, feit
 - Guia para testar o aparelho: [docs/TESTE_APARELHO.md](docs/TESTE_APARELHO.md)
 - Levar o projeto (.zip) para outro repositório, como o da entrega: [docs/ENTREGA.md](docs/ENTREGA.md)
 
-**Status:** Sprints 0 a 3 concluídas (aparelho testado, fase jogável, pontuação e métricas, menus, Pipo e sons). Próximo: Sprint 4, as 3 fases.
+**Status:** Sprints 0 a 4 concluídas (aparelho testado, pontuação e métricas, menus, Pipo e sons, e as 3 fases com notas longas, acordes e giros). Próximo: Sprint 5, histórico e evolução do paciente.
 
 Funciona baixando o `.zip` do GitHub, em qualquer pasta (inclusive com acento, como `Temporário`) e em qualquer repositório, mesmo enviando os arquivos pelo site.
 
@@ -48,7 +48,7 @@ O jogo é controlado só pelo aparelho. Enquanto ele não está disponível, o t
 | Aparelho | Ação | Teclado do PC |
 |---|---|---|
 | Tecla 1 / 2 / 3 | Trilhas esquerda / meio / direita | `A` / `S` / `D` (ou `F13`/`F14`/`F15`) |
-| Knob girar ← / → | Navegar nos menus · na pausa, voltar ao menu | `↑` / `↓` |
+| Knob girar ← / → | Navegar nos menus · notas de giro (Fase 3) | `↑` / `↓` |
 | Knob clique | Confirmar · pausar e continuar o jogo | `Enter` |
 
 ## Estrutura
@@ -58,10 +58,11 @@ core/     lógica do jogo (independente de plataforma)
   input/    leitura do aparelho: DeviceInput, DeviceMapping, DeviceAction
   game/     regras, sem desenho: Note, Chart (sequência de notas), Playfield (acerto/erro),
             Judge (Perfeito/Bom/Ok), Score (pontos e combo), SessionStats (métricas da sessão),
-            Pipo (humor do personagem)
-  audio/    Sfx: sons de acerto (uma nota por trilha), erro e menu
-  screens/  telas: MenuScreen, GameScreen, ResultScreen, DeviceTestScreen;
-            PipoRenderer (desenho do Pipo) e OptionList (menus pelo knob)
+            Pipo (humor do personagem), LevelData (as 3 fases), Progress (fases liberadas)
+  audio/    Sfx: sons de acerto (uma nota por trilha), erro, giro e menu
+  save/     ProgressStore: salva o progresso entre sessões
+  screens/  telas: MenuScreen, LevelSelectScreen, GameScreen, ResultScreen, DeviceTestScreen;
+            PipoRenderer (Pipo), StageRenderer (cenários) e OptionList (menus pelo knob)
 lwjgl3/   versão desktop (Lwjgl3Launcher, StartupHelper)
 assets/   sons (assets/sounds) e, depois, imagens e fontes
 tools/    gerar_sons.py: cria os sons de assets/sounds

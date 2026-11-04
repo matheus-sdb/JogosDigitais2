@@ -58,6 +58,15 @@ def confirm(volume=0.4):
     return piano(659.25, 0.12, volume)[: int(RATE * 0.09)] + piano(987.77, 0.25, volume)
 
 
+def arpeggio(volume=0.45):
+    """Giro do knob acertado: Dó-Mi-Sol bem rápido, como um 'brilho'."""
+    step = int(RATE * 0.06)
+    out = []
+    for f in (523.25, 659.25, 783.99):
+        out += piano(f, 0.3, volume)[:step]
+    return out + piano(1046.5, 0.35, volume)
+
+
 def fade_out(samples, ms=8):
     k = min(len(samples), int(RATE * ms / 1000))
     for i in range(k):
@@ -74,3 +83,4 @@ if __name__ == "__main__":
     write("erro.wav", bonk())
     write("menu_mover.wav", tick())
     write("menu_confirmar.wav", confirm())
+    write("giro.wav", arpeggio())

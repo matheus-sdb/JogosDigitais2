@@ -261,10 +261,15 @@ Cada sprint ≈ 1 semana, para casar com os commits semanais e a reunião com o 
 ![Pausa e Pipo na Sprint 3](img/pausa-sprint3.png)
 
 ### Sprint 4: As 3 fases
-- [ ] `LevelData` com as 3 fases e dificuldade progressiva
-- [ ] Notas longas (HOLD); o aparelho segura a tecla, teste aprovado
-- [ ] Acordes (até 3 teclas juntas, teste aprovado) e notas de giro do knob (Fase 3)
-- [ ] Fundos de cada fase (quarto, praça, teatro) e desbloqueio por meta
+- [x] `LevelData` com as 3 fases e dificuldade progressiva (Aquecimento ~1 min, Ritmo ~1,5 min, Destreza ~2 min; notas mais frequentes e rápidas e janela de acerto mais estreita a cada fase). `Chart.generate` monta uma sequência nova a cada partida, sempre começando com 4 notas simples de aquecimento
+- [x] Notas longas (HOLD): segurar a tecla até o fim, com tolerância de 150 ms ao soltar; bônus de pontos ao completar, e soltar cedo zera o combo. Nova métrica de **sustentação**: % do tempo das notas longas que foi segurado
+- [x] Acordes (duas teclas juntas, ligadas por uma faixa na tela) e notas de giro do knob (faixa roxa com setas; girar sem nota não conta como erro, porque o knob manda vários passos por volta). A tela de resultado mostra os giros acertados
+- [x] Fundos de cada fase (quarto, praça, teatro), desenhados só com formas, e desbloqueio por meta: tela de seleção de fase, meta mostrada no resultado e opção "Próxima fase". O progresso fica salvo em `%USERPROFILE%\.prefs\TrioTiles` (`Progress` + `ProgressStore`)
+- **Entrega:** ✅ testada em 01/11/2026
+
+![As 3 fases: quarto, praça e teatro](img/fases-sprint4.png)
+
+![Seleção de fase](img/selecao-fases.png)
 
 ### Sprint 5: Evolução do paciente
 - [ ] Salvar histórico de sessões em JSON
