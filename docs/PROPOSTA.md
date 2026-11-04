@@ -253,9 +253,12 @@ Cada sprint ≈ 1 semana, para casar com os commits semanais e a reunião com o 
 > **Observação para os testes:** na primeira partida a tendência foi "atrasa 97 ms". Parte disso pode ser atraso do monitor e do sistema, não do paciente. Se continuar aparecendo com outras pessoas, vale incluir nas Configurações (Sprint 5) um ajuste de atraso (calibração).
 
 ### Sprint 3: Menus e personagem
-- [ ] Menu principal, pausa (iniciar / pausar / reiniciar) navegando pelo knob
-- [ ] Pipo com animações básicas (parado, acerto, erro, dançando)
-- [ ] Sons de acerto/erro
+- [x] Menu principal, pausa (iniciar / pausar / reiniciar) navegando pelo knob: menu Jogar · Teste do Aparelho · Sair; clique do knob no jogo abre a pausa com Continuar · Reiniciar fase · Voltar ao menu (`OptionList`, com som ao girar e confirmar)
+- [x] Pipo com animações básicas (parado, acerto, erro, dançando): desenhado só com formas, atrás de um tecladinho de 3 teclas igual ao do paciente. Pula e toca a tecla acertada, faz "ops" (sem punir) no erro, dança a partir de 10 acertos seguidos e comemora no resultado quando a precisão passa de 70% (`Pipo` + `PipoRenderer`)
+- [x] Sons de acerto/erro: cada trilha toca uma nota (Dó, Mi, Sol, que formam um acorde) e o erro é um "bonk" suave. Os sons são sintetizados por `tools/gerar_sons.py`, sem arquivos baixados nem licença (`Sfx`)
+- **Entrega:** ✅ testada em 30/10/2026
+
+![Pausa e Pipo na Sprint 3](img/pausa-sprint3.png)
 
 ### Sprint 4: As 3 fases
 - [ ] `LevelData` com as 3 fases e dificuldade progressiva
