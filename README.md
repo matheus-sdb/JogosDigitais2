@@ -6,7 +6,7 @@ Jogo sério de reabilitação da mão e dos dedos, no estilo *Piano Tiles*, feit
 - Guia para testar o aparelho: [docs/TESTE_APARELHO.md](docs/TESTE_APARELHO.md)
 - Levar o projeto (.zip) para outro repositório, como o da entrega: [docs/ENTREGA.md](docs/ENTREGA.md)
 
-**Status:** Sprints 0, 1 e 2 concluídas (aparelho testado, fase jogável, pontuação e métricas de velocidade e consistência). Próximo: Sprint 3, menus e personagem.
+**Status:** Sprints 0 a 3 concluídas (aparelho testado, fase jogável, pontuação e métricas, menus, Pipo e sons). Próximo: Sprint 4, as 3 fases.
 
 Funciona baixando o `.zip` do GitHub, em qualquer pasta (inclusive com acento, como `Temporário`) e em qualquer repositório, mesmo enviando os arquivos pelo site.
 
@@ -57,10 +57,14 @@ O jogo é controlado só pelo aparelho. Enquanto ele não está disponível, o t
 core/     lógica do jogo (independente de plataforma)
   input/    leitura do aparelho: DeviceInput, DeviceMapping, DeviceAction
   game/     regras, sem desenho: Note, Chart (sequência de notas), Playfield (acerto/erro),
-            Judge (Perfeito/Bom/Ok), Score (pontos e combo), SessionStats (métricas da sessão)
-  screens/  telas: MenuScreen, GameScreen, ResultScreen, DeviceTestScreen
-lwjgl3/   versão desktop (Lwjgl3Launcher)
-assets/   imagens, sons e fontes
+            Judge (Perfeito/Bom/Ok), Score (pontos e combo), SessionStats (métricas da sessão),
+            Pipo (humor do personagem)
+  audio/    Sfx: sons de acerto (uma nota por trilha), erro e menu
+  screens/  telas: MenuScreen, GameScreen, ResultScreen, DeviceTestScreen;
+            PipoRenderer (desenho do Pipo) e OptionList (menus pelo knob)
+lwjgl3/   versão desktop (Lwjgl3Launcher, StartupHelper)
+assets/   sons (assets/sounds) e, depois, imagens e fontes
+tools/    gerar_sons.py: cria os sons de assets/sounds
 docs/     proposta, guias e prints
 ```
 
