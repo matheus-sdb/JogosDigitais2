@@ -184,11 +184,15 @@ public class ResultScreen extends BaseScreen {
             text(percent(stats.laneAccuracy(lane)), BAR_X + BAR_W + 15, y, Color.WHITE);
             int strays = stats.laneStrays(lane);
             String detail = stats.laneHits(lane) + " de " + stats.laneNotes(lane)
-                + (strays == 0 ? "" : strays == 1 ? "  ·  1 tecla errada" : "  ·  " + strays + " teclas erradas");
+                + "  ·  " + game.settings.hand().finger(lane)
+                + (strays == 0 ? "" : strays == 1 ? "  ·  1 errada" : "  ·  " + strays + " erradas");
             text(detail, BAR_X, y - 36, Color.LIGHT_GRAY);
         }
         int weak = stats.weakestLane(WEAK_MARGIN);
-        if (weak >= 0) text("Dedo para treinar mais: Tecla " + (weak + 1), RIGHT_X, 262, PERFECT_COLOR);
+        if (weak >= 0) {
+            text("Dedo para treinar mais: " + game.settings.hand().finger(weak) + " (tecla " + (weak + 1) + ")",
+                RIGHT_X, 262, PERFECT_COLOR);
+        }
         else if (stats.hits > 0) text("Os três dedos estão equilibrados", RIGHT_X, 262, GOOD_COLOR);
 
         float y = 222;

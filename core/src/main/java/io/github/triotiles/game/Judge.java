@@ -36,6 +36,11 @@ public class Judge {
         return Judgement.MISS;
     }
 
+    /** As mesmas janelas multiplicadas por {@code factor} (ex.: 1.25 = 25% mais tolerante). */
+    public Judge scaled(double factor) {
+        return new Judge(perfect * factor, good * factor, ok * factor);
+    }
+
     /** Maior distância do momento ideal que ainda conta como acerto, em segundos. */
     public double hitWindow() {
         return ok;

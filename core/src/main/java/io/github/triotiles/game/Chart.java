@@ -42,9 +42,18 @@ public class Chart {
      * Depois de uma nota longa vem uma pausa, para o dedo soltar antes da próxima.
      */
     public static Chart generate(LevelData level, long seed) {
+        return generate(level, seed, 1.0);
+    }
+
+    /**
+     * Igual a {@link #generate(LevelData, long)}, com o ritmo ajustado: {@code tempo} 0.8 deixa
+     * as notas 25% mais espaçadas, 1.2 deixa mais juntas. A duração da fase não muda.
+     */
+    public static Chart generate(LevelData level, long seed, double tempo) {
         Random random = new Random(seed);
         LanePicker picker = new LanePicker(random);
         List<Note> notes = new ArrayList<>();
+        double interval = level.interval / tempo;
         double t = FIRST_NOTE;
         double end = FIRST_NOTE + level.durationSeconds;
         int events = 0;
@@ -54,21 +63,21 @@ public class Chart {
             if ((roll -= level.spinChance) < 0) {
                 notes.add(Note.spin(random.nextBoolean() ? Note.SPIN_LEFT : Note.SPIN_RIGHT, t));
                 picker.reset();
-                t += level.interval;
+                t += interval;
             } else if ((roll -= level.chordChance) < 0) {
                 int a = random.nextInt(Playfield.LANES);
                 int b = (a + 1 + random.nextInt(Playfield.LANES - 1)) % Playfield.LANES;
                 notes.add(Note.tap(a, t));
                 notes.add(Note.tap(b, t));
                 picker.reset();
-                t += level.interval;
+                t += interval;
             } else if ((roll -= level.holdChance) < 0) {
-                double duration = level.interval * (1 + random.nextInt(2));
+                double duration = interval * (1 + random.nextInt(2));
                 notes.add(Note.hold(picker.next(), t, duration));
-                t += duration + level.interval;
+                t += duration + interval;
             } else {
                 notes.add(Note.tap(picker.next(), t));
-                t += level.interval;
+                t += interval;
             }
         }
         return new Chart(notes);

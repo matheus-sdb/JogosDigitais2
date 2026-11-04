@@ -10,9 +10,13 @@ import io.github.triotiles.game.Note;
 import io.github.triotiles.game.Pipo;
 import io.github.triotiles.game.Playfield;
 import io.github.triotiles.game.Score;
+import io.github.triotiles.game.SessionRecord;
 import io.github.triotiles.game.SessionStats;
+import io.github.triotiles.game.Settings;
 import io.github.triotiles.input.DeviceAction;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -50,6 +54,9 @@ public class GameScreen extends BaseScreen {
 
     private final LevelData level;
     private final Playfield field;
+    /** Velocidade de queda (px/s) e ajuste de atraso (s), já com as Configurações aplicadas. */
+    private final float speed;
+    private final double latencySeconds;
     private final Pipo pipo = new Pipo();
     private final OptionList pauseMenu = new OptionList("Continuar", "Reiniciar fase", "Voltar ao menu");
     private long startNanos;
@@ -81,8 +88,11 @@ public class GameScreen extends BaseScreen {
     public GameScreen(TrioTilesGame game, LevelData level) {
         super(game);
         this.level = level;
-        Chart chart = level.chart(TimeUtils.millis());
-        field = new Playfield(chart, level.judge());
+        Settings settings = game.settings;
+        Chart chart = settings.chartFor(level, TimeUtils.millis());
+        field = new Playfield(chart, settings.judgeFor(level));
+        speed = settings.speedFor(level);
+        latencySeconds = settings.latencyMs() / 1000.0;
     }
 
     @Override
@@ -101,6 +111,14 @@ public class GameScreen extends BaseScreen {
     private double phaseTime(long nanos) {
         long t = isPaused() ? pauseStart : nanos;
         return (t - startNanos - pausedNanos) / 1e9;
+    }
+
+    /**
+     * Momento de um toque no tempo da fase, descontado o ajuste de atraso das Configurações
+     * (compensa o atraso do monitor e do computador).
+     */
+    private double inputTime(long timeNanos) {
+        return phaseTime(timeNanos > 0 ? timeNanos : TimeUtils.nanoTime()) - latencySeconds;
     }
 
     private void setPaused(boolean pause) {
@@ -134,7 +152,7 @@ public class GameScreen extends BaseScreen {
             }
             return;
         }
-        double t = phaseTime(timeNanos > 0 ? timeNanos : TimeUtils.nanoTime());
+        double t = inputTime(timeNanos);
         switch (action) {
             case KNOB_PRESS -> {
                 pauseMenu.select(0);
@@ -171,7 +189,7 @@ public class GameScreen extends BaseScreen {
     @Override
     public void actionUp(DeviceAction action, long timeNanos, long heldNanos) {
         if (finished || !action.lane) return;
-        Note n = field.release(action.laneIndex(), phaseTime(timeNanos > 0 ? timeNanos : TimeUtils.nanoTime()));
+        Note n = field.release(action.laneIndex(), inputTime(timeNanos));
         if (n != null && n.holdState() == Note.HoldState.BROKEN) {
             showFeedback(n.lane, "Soltou cedo", BAD_COLOR);
             pipo.onMiss();
@@ -210,7 +228,10 @@ public class GameScreen extends BaseScreen {
         finished = true;
         SessionStats stats = SessionStats.from(field);
         LevelData unlocked = game.progress.record(level, stats.accuracy);
-        game.progressStore.save(game.progress);
+        game.saveProgress();
+        String date = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).toString();
+        game.history.add(SessionRecord.of(stats, level, game.settings, date));
+        game.historyStore.save(game.history);
         game.setScreen(new ResultScreen(game, level, stats, unlocked));
     }
 
@@ -278,7 +299,7 @@ public class GameScreen extends BaseScreen {
     }
 
     private float noteY(double noteTime, double t) {
-        return (float) (HIT_Y + (noteTime - t) * level.speed);
+        return (float) (HIT_Y + (noteTime - t) * speed);
     }
 
     private void drawTap(ShapeRenderer s, Note n, float headY) {
