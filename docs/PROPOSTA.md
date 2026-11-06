@@ -272,9 +272,12 @@ Cada sprint ≈ 1 semana, para casar com os commits semanais e a reunião com o 
 ![Seleção de fase](img/selecao-fases.png)
 
 ### Sprint 5: Evolução do paciente
-- [ ] Salvar histórico de sessões em JSON
-- [ ] Tela de Progresso com gráfico simples
-- [ ] Configurações (nome, mão, velocidade, janela de acerto)
+- [x] Salvar histórico de sessões em JSON: cada partida grava data, paciente, fase, todas as métricas e as configurações usadas em `%USERPROFILE%\TrioTiles\historico.json`, e também em `historico.csv`, que abre direto no Excel (para o terapeuta e para os gráficos do short paper). Progresso e histórico são **por paciente**
+- [x] Tela de Progresso com gráfico simples: evolução sessão a sessão de precisão, velocidade, consistência e sustentação (o knob troca a métrica), com a cor de cada fase e um resumo do tipo "melhorou 32 pontos desde a primeira sessão"
+- [x] Configurações (nome, mão, velocidade, janela de acerto), além de volume e **ajuste de atraso** (calibração anotada na Sprint 2), com sugestão calculada pelas últimas sessões. O nome é digitado só com o aparelho: o knob escolhe a letra e as teclas apagam, escrevem e terminam. A mão usada muda o nome do dedo de cada tecla nos resultados (direita: tecla 1 = indicador; esquerda: tecla 1 = anelar), em vez de inverter as teclas
+- **Entrega:** ✅ testada em 04/11/2026
+
+![Configurações, nome do paciente e progresso (dados de exemplo)](img/sprint5-configuracoes-progresso.png)
 
 ### Sprint 6: Polimento e "IoT" (opcional)
 - [ ] Testes com colegas, ajuste de velocidades e janelas
