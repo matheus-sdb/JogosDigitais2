@@ -1,0 +1,86 @@
+apply plugin: 'application'
+
+def mainClassName = 'io.github.triotiles.lwjgl3.Lwjgl3Launcher'
+
+sourceSets.main.resources.srcDirs += [rootProject.file('assets').path]
+
+application {
+  applicationName = 'TrioTiles'
+  mainClass = mainClassName
+}
+
+dependencies {
+  implementation project(':core')
+  implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+  implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+}
+
+run {
+  workingDir = rootProject.file('assets')
+  // No macOS o GLFW precisa rodar na thread principal.
+  if (System.getProperty('os.name').toLowerCase().contains('mac')) {
+    jvmArgs += '-XstartOnFirstThread'
+  }
+}
+
+// Gera um .jar único com tudo dentro: lwjgl3/build/libs/TrioTiles-<versão>.jar
+jar {
+  archiveBaseName.set('TrioTiles')
+  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+  dependsOn configurations.runtimeClasspath
+  from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+  exclude 'META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA'
+  manifest {
+    attributes 'Main-Class': mainClassName
+  }
+}
+
+// ---------------------------------------------------------------------------------------------
+// Executável para Windows: TrioTiles.exe com o Java embutido (não precisa instalar nada).
+//   gradlew.bat lwjgl3:packageWindows  ->  lwjgl3/build/dist/TrioTiles-windows.zip
+// Usa o jpackage do próprio JDK (17 ou mais novo) e só roda no Windows.
+// ---------------------------------------------------------------------------------------------
+def isWindowsHost = System.getProperty('os.name').toLowerCase().contains('windows')
+def jpackageInputDir = layout.buildDirectory.dir('jpackage/input')
+def jpackageImageDir = layout.buildDirectory.dir('jpackage/image')
+
+tasks.register('jpackageInput', Sync) {
+  from jar
+  into jpackageInputDir
+}
+
+tasks.register('jpackageImage', Exec) {
+  group = 'distribution'
+  description = 'Monta a pasta TrioTiles/ com TrioTiles.exe e o Java embutido (só no Windows).'
+  dependsOn 'jpackageInput'
+  onlyIf('o executável .exe só pode ser gerado no Windows') { isWindowsHost }
+  inputs.dir(jpackageInputDir)
+  inputs.file('icons/triotiles.ico')
+  outputs.dir(jpackageImageDir)
+
+  def jpackage = new File(System.getProperty('java.home'), 'bin/jpackage.exe').absolutePath
+  doFirst { jpackageImageDir.get().asFile.deleteDir() } // o jpackage não sobrescreve uma pasta antiga
+  commandLine jpackage,
+    '--type', 'app-image',
+    '--name', 'TrioTiles',
+    '--input', jpackageInputDir.get().asFile.absolutePath,
+    '--main-jar', "TrioTiles-${version}.jar",
+    '--main-class', mainClassName,
+    '--icon', file('icons/triotiles.ico').absolutePath,
+    '--app-version', "${version}",
+    '--vendor', 'TrioTiles',
+    '--description', 'Jogo serio de reabilitacao da mao',
+    // só as partes do Java que o jogo usa (jdeps), para o pacote ficar menor
+    '--add-modules', 'java.base,java.desktop,java.management,jdk.unsupported',
+    '--jlink-options', '--strip-debug --no-header-files --no-man-pages',
+    '--dest', jpackageImageDir.get().asFile.absolutePath
+}
+
+tasks.register('packageWindows', Zip) {
+  group = 'distribution'
+  description = 'Gera lwjgl3/build/dist/TrioTiles-windows.zip: descompactar e abrir TrioTiles.exe.'
+  dependsOn 'jpackageImage'
+  from jpackageImageDir
+  archiveFileName = 'TrioTiles-windows.zip'
+  destinationDirectory = layout.buildDirectory.dir("dist")
+}
