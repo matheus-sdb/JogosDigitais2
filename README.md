@@ -6,7 +6,9 @@ Jogo sério de reabilitação da mão e dos dedos, no estilo *Piano Tiles*, feit
 - Guia para testar o aparelho: [docs/TESTE_APARELHO.md](docs/TESTE_APARELHO.md)
 - Levar o projeto (.zip) para outro repositório, como o da entrega: [docs/ENTREGA.md](docs/ENTREGA.md)
 
-**Status:** Sprints 0 a 4 concluídas (aparelho testado, pontuação e métricas, menus, Pipo e sons, e as 3 fases com notas longas, acordes e giros). Próximo: Sprint 5, histórico e evolução do paciente.
+**Status:** Sprints 0 a 5 concluídas (aparelho testado, pontuação e métricas, menus, Pipo e sons, as 3 fases, histórico por paciente com gráfico de progresso e configurações). Próximo: Sprint 6, polimento.
+
+**Onde ficam os dados:** histórico em `%USERPROFILE%\TrioTiles\` (`historico.json` e `historico.csv`, que abre no Excel); progresso e configurações em `%USERPROFILE%\.prefs\`.
 
 Funciona baixando o `.zip` do GitHub, em qualquer pasta (inclusive com acento, como `Temporário`) e em qualquer repositório, mesmo enviando os arquivos pelo site.
 
@@ -58,10 +60,12 @@ core/     lógica do jogo (independente de plataforma)
   input/    leitura do aparelho: DeviceInput, DeviceMapping, DeviceAction
   game/     regras, sem desenho: Note, Chart (sequência de notas), Playfield (acerto/erro),
             Judge (Perfeito/Bom/Ok), Score (pontos e combo), SessionStats (métricas da sessão),
-            Pipo (humor do personagem), LevelData (as 3 fases), Progress (fases liberadas)
+            Pipo (humor do personagem), LevelData (as 3 fases), Progress (fases liberadas),
+            Settings (configurações), SessionRecord + SessionHistory (histórico, JSON e CSV)
   audio/    Sfx: sons de acerto (uma nota por trilha), erro, giro e menu
-  save/     ProgressStore: salva o progresso entre sessões
-  screens/  telas: MenuScreen, LevelSelectScreen, GameScreen, ResultScreen, DeviceTestScreen;
+  save/     ProgressStore, SettingsStore e HistoryStore: gravam no computador
+  screens/  telas: MenuScreen, LevelSelectScreen, GameScreen, ResultScreen, ProgressScreen,
+            SettingsScreen, NameEditScreen, DeviceTestScreen;
             PipoRenderer (Pipo), StageRenderer (cenários) e OptionList (menus pelo knob)
 lwjgl3/   versão desktop (Lwjgl3Launcher, StartupHelper)
 assets/   sons (assets/sounds) e, depois, imagens e fontes
