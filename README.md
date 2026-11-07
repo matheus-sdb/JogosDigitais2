@@ -1,76 +1,49 @@
 # TrioTiles
 
-Jogo sério de reabilitação da mão e dos dedos, no estilo *Piano Tiles*, feito em **libGDX** e controlado por um teclado USB de **3 teclas + 1 knob**.
+Jogo sério de reabilitação da mão e dos dedos, no estilo *Piano Tiles*, feito em **libGDX** e controlado só por um mini teclado USB de **3 teclas + 1 knob**. Notas caem em 3 trilhas e cada dedo toca a sua tecla; o jogo mede velocidade e consistência dos toques e mostra a evolução do paciente sessão a sessão.
 
-- Proposta, encaixe na reabilitação e roadmap: [docs/PROPOSTA.md](docs/PROPOSTA.md)
-- Guia para testar o aparelho: [docs/TESTE_APARELHO.md](docs/TESTE_APARELHO.md)
-- Levar o projeto (.zip) para outro repositório, como o da entrega: [docs/ENTREGA.md](docs/ENTREGA.md)
+- Projeto (problema, justificativa, mecânicas, requisitos): [docs/PROPOSTA.md](docs/PROPOSTA.md)
+- Short paper: [docs/short-paper](docs/short-paper/)
+- Configurar e testar o aparelho: [docs/APARELHO.md](docs/APARELHO.md)
 
-**Status:** Sprints 0 a 5 concluídas (aparelho testado, pontuação e métricas, menus, Pipo e sons, as 3 fases, histórico por paciente com gráfico de progresso e configurações). Próximo: Sprint 6, polimento.
-
-**Onde ficam os dados:** histórico em `%USERPROFILE%\TrioTiles\` (`historico.json` e `historico.csv`, que abre no Excel); progresso e configurações em `%USERPROFILE%\.prefs\`.
-
-Funciona baixando o `.zip` do GitHub, em qualquer pasta (inclusive com acento, como `Temporário`) e em qualquer repositório, mesmo enviando os arquivos pelo site.
+**Equipe** (Universidade Presbiteriana Mackenzie, disciplina Jogos Digitais): Matheus Santiago de Brito, Lucas Hiroyuki Omine e Leonardo Guedes Serra de Sant'Ana.
 
 ![Menu](docs/img/menu.png)
 
-## Como rodar
+## Jogar
 
-Precisa do **JDK 17 ou mais novo** (ex.: [Temurin](https://adoptium.net/)). O Gradle é baixado sozinho na primeira vez.
+Baixe o **`TrioTiles-windows.zip`** (GitHub → *Actions* → execução mais recente → *Artifacts* → **TrioTiles-windows**), descompacte e abra **`TrioTiles.exe`**. Não precisa instalar Java. Se o Windows avisar que o programa é desconhecido: **Mais informações → Executar assim mesmo**.
 
-```bash
-# Windows
-gradlew.bat lwjgl3:run
+## Rodar o código
 
-# Linux / macOS (o "sh" evita erro de permissão em projetos vindos de .zip)
-sh gradlew lwjgl3:run
-```
+Precisa do **JDK 17+**. Coloque o projeto numa pasta **sem acento** no caminho (ex.: `C:\dev\TrioTiles`).
 
-No IntelliJ IDEA: *File → Open* na pasta do projeto e rode a tarefa Gradle `lwjgl3 > application > run`.
+- **VS Code** (Extension Pack for Java): abra a pasta e clique em **Run** no `main` de `lwjgl3/src/main/java/io/github/triotiles/lwjgl3/Lwjgl3Launcher.java`.
+- **Terminal:** `gradlew.bat lwjgl3:run` (Linux/macOS: `sh gradlew lwjgl3:run`).
+- **Gerar o executável:** `gradlew.bat lwjgl3:packageWindows` → `lwjgl3/build/dist/TrioTiles-windows.zip`. O `.jar` sai com `gradlew.bat lwjgl3:jar` em `lwjgl3/build/libs/`.
 
-### Gerar o executável (.jar)
-
-```bash
-gradlew.bat lwjgl3:jar        # Linux / macOS: sh gradlew lwjgl3:jar
-java -jar lwjgl3/build/libs/TrioTiles-0.1.0.jar
-```
-
-Cada push no GitHub também gera o `.jar` automaticamente: aba **Actions** → execução mais recente → artefato **TrioTiles-jar**.
-
-### Rodar os testes
-
-```bash
-gradlew.bat test              # Linux / macOS: sh gradlew test
-```
+> Erro `Could not find or load main class ...Lwjgl3Launcher` no VS Code: tire o acento do caminho da pasta, faça `Ctrl+Shift+P` → **Java: Clean Java Language Server Workspace** e rode de novo.
 
 ## Controles
 
-O jogo é controlado só pelo aparelho. Enquanto ele não está disponível, o teclado do PC simula:
-
-| Aparelho | Ação | Teclado do PC |
+| Aparelho | No jogo | Teclado do PC |
 |---|---|---|
-| Tecla 1 / 2 / 3 | Trilhas esquerda / meio / direita | `A` / `S` / `D` (ou `F13`/`F14`/`F15`) |
-| Knob girar ← / → | Navegar nos menus · notas de giro (Fase 3) | `↑` / `↓` |
-| Knob clique | Confirmar · pausar e continuar o jogo | `Enter` |
+| Teclas 1 / 2 / 3 | Trilhas esquerda / meio / direita | `A` / `S` / `D` |
+| Girar o knob ← / → | Navegar · notas de giro (Fase 3) | `↑` / `↓` |
+| Clicar o knob | Confirmar · pausar | `Enter` |
+
+## Dados do paciente
+
+- Histórico de sessões: `%USERPROFILE%\TrioTiles\historico.json` e `historico.csv` (abre no Excel).
+- Progresso e configurações: `%USERPROFILE%\.prefs\TrioTiles` e `TrioTiles-config`.
 
 ## Estrutura
 
 ```
-core/     lógica do jogo (independente de plataforma)
-  input/    leitura do aparelho: DeviceInput, DeviceMapping, DeviceAction
-  game/     regras, sem desenho: Note, Chart (sequência de notas), Playfield (acerto/erro),
-            Judge (Perfeito/Bom/Ok), Score (pontos e combo), SessionStats (métricas da sessão),
-            Pipo (humor do personagem), LevelData (as 3 fases), Progress (fases liberadas),
-            Settings (configurações), SessionRecord + SessionHistory (histórico, JSON e CSV)
-  audio/    Sfx: sons de acerto (uma nota por trilha), erro, giro e menu
-  save/     ProgressStore, SettingsStore e HistoryStore: gravam no computador
-  screens/  telas: MenuScreen, LevelSelectScreen, GameScreen, ResultScreen, ProgressScreen,
-            SettingsScreen, NameEditScreen, DeviceTestScreen;
-            PipoRenderer (Pipo), StageRenderer (cenários) e OptionList (menus pelo knob)
-lwjgl3/   versão desktop (Lwjgl3Launcher, StartupHelper)
-assets/   sons (assets/sounds) e, depois, imagens e fontes
-tools/    gerar_sons.py: cria os sons de assets/sounds
-docs/     proposta, guias e prints
+core/     jogo (input, game, audio, save, screens)
+lwjgl3/   versão desktop e empacotamento do .exe
+assets/   sons
+docs/     projeto, short paper, aparelho e prints
 ```
 
-O resto do jogo nunca lê teclas diretamente: só recebe ações como "Tecla 2 pressionada" da classe `DeviceInput`. Se o mapeamento do aparelho mudar, só `DeviceMapping` muda.
+Ao enviar o projeto para outro repositório, envie também `.github/`, `.gitattributes`, `gradlew`, `gradlew.bat` e `gradle/wrapper/` (com o `.jar`): é o que faz o GitHub Actions gerar o `.exe` e o `.jar`.
